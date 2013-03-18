@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-dojo" default="copy-resources" basedir=".">
+
+	<description>
+		Build file for handling the Dojo Toolkit during the build.
+	</description>
+
+	<property file="build-dojo.properties"/>
+	<property name="prefs.file" value="../../.settings/com.ibm.imp.worklight.core.prefs"/>
+
+	<!--
+		You can comment out this property if you do not want to deploy mobile content.
+	-->
+	<property name="mobile.mgt" value="1"/>
+
+	<!--
+		Use this section to customize the Dojo Toolkit layers that you want to deploy with your application.
+		The mobile-related layers are not managed in this section.
+	-->
+	<patternset id="dojo.resources.layers">
+		<include name="dojo/dojo.js.compressed.js"/>
+		<include name="dojo/core-web-layer.js.compressed.js"/>
+		<!--
+			<include name="dojo/dijit-layer.js.compressed.js"/>
+			<include name="dojo/calendar-layer.js.compressed.js"/>
+			<include name="dojo/charting-layer.js.compressed.js"/>
+			<include name="dojo/dgauges-layer.js.compressed.js"/>
+			<include name="dojo/graphics-layer.js.compressed.js"/>
+			<include name="dojo/treemap-layer.js.compressed.js"/>
+		-->
+	</patternset>
+
+	<!--
+		The following modules are not part of the core web layer and might be required by the Dojo Toolkit.
+	-->
+	<patternset id="dojo.resources.loose-modules">
+		<include name="dojo/_base/query.js"/>
+		<include name="dojo/data/**"/>
+		<include name="dojo/dnd/**"/>
+		<include name="dojo/io/**"/>
+		<include name="dojo/resources/**"/>
+		<include name="dojo/rpc/**"/>
+		<include name="dojo/selector/**"/>
+		<include name="dojo/store/**"/>
+		<include name="dojo/AdapterRegistry.js"/>
+		<include name="dojo/back.js"/>
+		<include name="dojo/behavior.js"/>
+		<include name="dojo/gears.js"/>
+		<include name="dojo/hash.js"/>
+		<include name="dojo/html.js"/>
+		<include name="dojo/i18n.js.patched"/>
+		<include name="dojo/jaxer.js"/>
+		<include name="dojo/loadInit.js"/>
+		<include name="dojo/NodeList*.js"/>
+		<include name="dojo/package.json"/>
+		<include name="dojo/query.js"/>
+		<include name="dojo/require.js"/>
+	</patternset>
+
+	<patternset id="dojo.resources.nls">
+		<include name="dojo/nls/colors.js"/>
+	</patternset>
+
+	<mapper id="dojo.resources.mapper" type="glob" from="*.js.compressed.js" to="*.js"/>
+
+	<target name="-check-prefs-exist">
+		<available file="${prefs.file}" property="prefs.exists"/>
+	</target>
+
+	<target name="-check-dojo-enablement" depends="-check-prefs-exist" if="prefs.exists">
+		<loadproperties srcFile="${prefs.file}">
+			<filterchain>
+				<linecontains>
+					<contains value="toolkit/apps/${app.id}/dojo=true"/>
+				</linecontains>
+			</filterchain>
+		</loadproperties>
+	</target>
+
+	<target name="-compute-dojo-root" if="dojo.workspaceRoot">
+		<property name="dojo.root" value="../../..${dojo.workspaceRoot}"/>
+	</target>
+
+	<!--
+		You can use the following test example to detect whether the mobile compat resources are required.
+		By using this test in your deployment, the preview will not work in browsers that are not WebKit-based.
+	-->
+	<!--
+	<target name="-check-mobile-compat-requirement">
+		<condition property="mobile.compat.required">
+			<not>
+				<or>
+					<equals arg1="${env.id}" arg2="iphone"/>
+					<equals arg1="${env.id}" arg2="ipad"/>
+					<equals arg1="${env.id}" arg2="android"/>
+					<equals arg1="${env.id}" arg2="blackberry"/>
+				</or>		
+			</not>
+		</condition>
+	</target>
+	-->
+
+	<target name="-display-dojo-warning" unless="toolkit/apps/${app.id}/dojo">
+		<echo level="error">The Dojo Toolkit has not been added to the application.</echo>
+	</target>
+
+	<target name="-display-build-dir-warning" unless="build.dir">
+		<echo level="error">The build.dir property is not specified.</echo>
+		<echo level="info">Do not run the target manually. The target is automatically called by Worklight Studio and the standalone builder.</echo>
+	</target>
+
+	<target name="-init-copy-resources" depends="-check-dojo-enablement,-compute-dojo-root">
+		<condition property="copy-resources.enabled">
+			<and>
+				<isset property="toolkit/apps/${app.id}/dojo"/>
+				<isset property="dojo.root"/>
+				<isset property="build.dir"/>
+			</and>
+		</condition>
+		<antcall target="-display-dojo-warning"/>
+		<antcall target="-display-build-dir-warning"/>
+	</target>
+
+	<target name="-copy-nls-resources">
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<patternset refid="dojo.resources.nls"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="-copy-mobile-resources" if="mobile.mgt">
+		<!-- copy the mobile layers -->
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojo/mobile-compat-layer.js.compressed.js"/>
+				<include name="dojo/mobile-ui-layer.js.compressed.js"/>
+			</fileset>
+			<mapper refid="dojo.resources.mapper"/>
+		</copy>
+		<!-- copy dojox.mobile -->
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojox/mobile/bookmarkable.js"/>
+				<include name="dojox/mobile/deviceTheme.js"/>
+				<include name="dojox/mobile/migrationAssist.js"/>
+				<include name="dojox/mobile/mobile-all.js"/>
+				<include name="dojox/mobile/themes/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<!--
+		The following example shows how to handle the mobile compat resources separately.
+		The example depends on the -check-mobile-compat-requirement test.
+	-->
+	<!--
+	<target name="-copy-mobile-resources" if="mobile.mgt">
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojo/mobile-ui-layer.js.compressed.js"/>
+			</fileset>
+			<mapper refid="dojo.resources.mapper"/>
+		</copy>
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojox/mobile/bookmarkable.js"/>
+				<include name="dojox/mobile/deviceTheme.js"/>
+				<include name="dojox/mobile/migrationAssist.js"/>
+				<include name="dojox/mobile/mobile-all.js"/>
+				<include name="dojox/mobile/themes/**"/>
+				<exclude name="**/compat/**"/>
+				<exclude name="**/*-compat.*"/>
+			</fileset>
+		</copy>
+		<antcall target="-copy-mobile-compat-resources"/>
+	</target>
+	
+	<target name="-copy-mobile-compat-resources" depends="-check-mobile-compat-requirement" if="mobile.compat.required">
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojox/mobile/themes/**/compat/**"/>
+				<include name="dojox/mobile/themes/**/*-compat.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<include name="dojo/mobile-compat-layer.js.compressed.js"/>
+			</fileset>
+			<mapper refid="dojo.resources.mapper"/>
+		</copy>
+	</target>
+	-->
+
+	<!--
+		The following section implements the deployment of the Dojo Toolkit layers and resources for your application. 
+		The deployment is run automatically. By default, the minimum requirements to run a simple Dojo application are selected from the Dojo Toolkit package. 
+		
+		You can use the following properties to customize this build file:
+		- skin.id: The skin being built
+		- env.id: The environment being built (iphone, ipad, android, blackberry, windowsphone, vista, dashboard, facebook, igoogle, embedded or mobilewebapp)
+		- env.version: The version of the environment
+	-->
+	<target name="copy-resources" depends="-init-copy-resources" if="copy-resources.enabled">
+		<!-- copy the layers -->
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<patternset refid="dojo.resources.layers"/>
+			</fileset>
+			<mapper refid="dojo.resources.mapper"/>
+		</copy>
+		<!-- copy the loose modules -->
+		<copy todir="${build.dir}">
+			<fileset dir="${dojo.root}">
+				<patternset refid="dojo.resources.loose-modules"/>
+			</fileset>
+		</copy>
+		<antcall target="-copy-nls-resources"/>
+		<antcall target="-copy-mobile-resources"/>
+	</target>
+
+</project>

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="dijit/themes/dijit.css">
+<link rel="stylesheet" type="text/css"
+	href="dijit/themes/claro/claro.css">
+<script>window.$ = window.jQuery = WLJQ;</script>
+<title>Weather</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript"
+	data-dojo-config="isDebug: false, async: true, parseOnLoad: true, mblHideAddressBar: false"
+	src="dojo/dojo.js"></script>
+<link rel="stylesheet" href="css/Weather.css">
+</head>
+<body id="content" style="display: none;" class="claro">
+	<div data-dojo-type="dojox.mobile.ScrollableView" id="weather"
+		data-dojo-props="selected:true">
+	
+		<div data-dojo-type="dojox.mobile.Heading">Weather
+			<div data-dojo-type="dojox.mobile.ToolBarButton" moveTo="about">About</div>
+		</div>
+
+		<select data-dojo-type="dijit.form.DataList"
+			data-dojo-props="id:'dataListId'">
+			<option value="4118">Toronto, Canada</option>
+			<option value="935">York, Canada"</option>
+			<option value="3369">Ottawa, Canada</option>
+			<option value="9807">Vancouver, Canada</option>
+		</select>
+		<input id="location" type="text" data-dojo-type="dojox.mobile.ComboBox"
+			data-dojo-props="list:'dataListId'">
+
+		<br/>		
+		<button data-dojo-type="dojox.mobile.Button" data-dojo-props="label:'Get Weather', onClick:function(e){getWeatherInfo();}">
+		</button>
+		<br/> 
+		<span id="weatherResult"></span>
+	</div>
+
+	<div data-dojo-type="dojox.mobile.ScrollableView" id="about"
+		data-dojo-props="selected:false">
+		<h1>About Page</h1>
+	</div>
+	<!--application UI goes here-->
+	<script src="js/initOptions.js"></script>
+	<script src="js/Weather.js"></script>
+	<script src="js/messages.js"></script>
+</body>
+</html>
