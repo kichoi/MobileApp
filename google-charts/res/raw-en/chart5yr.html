@@ -1,0 +1,251 @@
+<meta charset="utf-8">
+<html>
+  <head>
+    <link href="chart.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="popup.js"></script>
+ 
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+ 
+  
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.setOnLoadCallback(drawChart2);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      
+      
+ function drawChart2() { 
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Ages');
+    data.addColumn('number', 'Value');
+    var dataX = window.Android.getChartXValues().split(',');
+    var dataY = window.Android.getChartYValues().split(',');
+    var minMax = window.Android.getMinMaxDTValues().split(',');
+    var minD = minMax[0];
+    var minT = minMax[2];
+    var maxD = minMax[1];
+    var maxT = minMax[3];
+    var dataYColor = new Array();
+    for(var i=0; i<dataX.length; i++){
+    	var row=new Array();
+    	row[0]=dataX[i];
+    	// var yc=dataY[i];
+    	// var yVandColor=yc.split('|');
+    	row[1]=parseInt(dataY[i]);
+    	data.addRow(row);
+    	// dataYColor[i]=yVandColor[1];
+    }
+       	
+   var view = new google.visualization.DataView(data);
+   view.setColumns([0,{
+        type: 'number',
+        label: 'Value',
+        calc: function (dt, row) {
+            return (row ==0 ) ? dt.getValue(row, 1) : null;
+        }
+    }, {
+        type: 'number',
+        label: 'Value',
+        calc: function (dt, row) {
+        	if(row == 0) return null;
+        	var max = (row % 2 == 0)? maxD: maxT;
+        	return dt.getValue(row, 1) == max ? dt.getValue(row,1): null;
+        }
+    }, {
+        type: 'number',
+        label: 'Value',
+        calc: function (dt, row) {
+        	if(row == 0) return null;
+        	var min = (row % 2 == 0)? minD: minT;
+        	var max = (row % 2 == 0)? maxD: maxT;
+        	var value=dt.getValue(row,1);
+        	return (value != min && value != max)? value: null;
+       }
+    }  
+    ]);
+    
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+    chart.draw(view, {
+        legend: 'none',
+        isStacked: true,
+        height: 300,
+        width: 400, 
+        'chartArea': {'width': '90%', 'height': '80%'},
+        backgroundColor: '#e6e7e8',
+    	is3D: true,
+    	vAxis: {minValue:0, maxValue:5, format:'0'},
+        colors: ['#dfb782','#ca5e60','#3abeee']
+    });
+    
+    getValues();
+    
+ };     
+      
+ 	function getValues() {
+  	
+ 		var userInfo=window.Android.getUserInfo();
+ 		userInfo=userInfo.split("|");
+   		var userName = document.getElementById('userName');
+ 		userName.innerHTML=userInfo[0];
+ 		userName.style.color='black';
+ 		userName.size=4;
+    
+   		var userGender = document.getElementById('userGender');
+ 		userGender.innerHTML=userInfo[1];
+ 		userGender.style.color='black';
+ 		userGender.size=4;
+ 
+   		var userBirthDay = document.getElementById('userBirthDay');
+ 		userBirthDay.innerHTML=userInfo[2];
+ 		userBirthDay.style.color='black';
+ 		userBirthDay.size=4;
+  
+   		var userBirthTime = document.getElementById('userBirthTime');
+ 		userBirthTime.innerHTML=userInfo[3];
+ 		userBirthTime.style.color='black';
+ 		userBirthTime.size=4;
+ 		
+ 		var mainTurningStation = document.getElementById('mainTurningStation');
+ 		mainTurningStation.innerHTML="Turning Point:"+window.Android.getMainTurningStation();
+ 		mainTurningStation.style.color='black';
+ 		mainTurningStation.size=4;
+    		
+	};     
+      
+     
+    </script>
+  </head>
+
+
+  <body background="grey_background.png">
+   	<div id="blanket" style="display:none"></div>
+
+
+    <div id="popUpDivBalance" style="display:none">
+    	<table>
+    	<tr><td align="center">
+    	<br/><br/>
+    	<img src="balance_box.png"/>
+    	<br/>
+    	</td></tr>
+      	<tr><td align="center">
+		<font color="black">Balance</font>
+		<br/>
+    	</td></tr>   	
+    	<tr><td><font color="black"> Life balancing point is a base point that you compare the rest of your life to.  If your level of satisfaction dips below the Life Balancing Point, then you would seek self-improvement.  However, if you see your life as better in comparison to the Life Balancing Point, then you will consider your life ideal.</font></td></tr>
+    	<tr><td align="center">
+    	<a href="#" onclick="popup('popUpDivBalance')" ><img src="close.png"/></a><br/>
+    	</td></tr>
+    	</table>
+    </div>
+
+
+    <div id="popUpDivGrowing" style="display:none">
+    	<table>
+    	<tr><td align="center">
+    	<br/><br/>
+    	<img src="growing_box.png"/>
+    	<br/>
+    	</td></tr>
+      	<tr><td align="center">
+		<font color="black">Growing</font>
+		<br/>
+    	</td></tr>   	
+    	<tr><td><font color="black">
+    This stage is the growth stage of your life, the ups and downs of your life period, you need to continue to learn knowledge and overcome difficulties to break themselves. This stage can be the use of color in this stage of your five elements need to add some elements five elements to supplement the lack of increased confidence and emotional balance, encourage people to add color.
+    	</font></td></tr>
+    	<tr><td align="center">
+    	<a href="#" onclick="popup('popUpDivGrowing')" ><img src="close.png"/></a><br/>
+    	</td></tr>
+    	</table>
+    </div>
+
+
+  <div id="popUpDivThrive" style="display:none">
+    	<table>
+    	<tr><td align="center">
+    	<br/><br/>
+    	<img src="thrive_box.png"/>
+    	<br/>
+    	</td></tr>
+      	<tr><td align="center">
+		<font color="black">Thrive</font>
+		<br/>
+    	</td></tr>   	
+    	<tr><td><font color="black">
+ This stage is the formative years of your life, and it is also a stage that is filled with life&#39;s ups and downs. During this period, you need to keep improving your knowledge and overcoming challenges.  At this stage, you need to utilize the colors of the five elements to supplement the insufficiency. Therefore, confidence can be increased and emotion can be balanced.   	</p>
+    	</font></td></tr>
+    	<tr><td align="center">
+    	<a href="#" onclick="popup('popUpDivThrive')" ><img src="close.png"/></a><br/>
+    	</td></tr>
+    	</table>
+    </div>
+    <div id="popUpDivStablize" style="display:none">
+    	<table>
+    	<tr><td align="center">
+    	<br/><br/>
+    	<img src="stabilize_box.png"/>
+    	<br/>
+    	</td></tr>
+      	<tr><td align="center">
+		<font color="black">Stablize</font>
+		<br/>
+    	</td></tr>   	
+    	<tr><td><font color="black">
+    	This is the Life Stabilization Stage, and it is a period for moving forward. During this stage, you will feel at ease and will have a greater chance of fulfilling your goal.  Using the colors of the five elements will increase the chance for success.
+    	</font></td></tr>
+    	<tr><td align="center">
+    	<a href="#" onclick="popup('popUpDivStablize')" ><img src="close.png"/></a><br/>
+    	</td></tr>
+    	</table>
+    </div>
+
+
+    <table>
+    <tr><td colspan="4" align="center" ><font color="black">Five Year Fortune Graph</font></td></tr>
+    <tr><td colspan="2" ><div id="userName"></div></td>
+    	<td colspan="2" ><div id="userGender"></div></td>
+    </tr>
+    <tr><td colspan="2"  ><div id="userBirthDay"></div></td>
+    	<td colspan="2"  ><div id="userBirthTime"></div></td>
+    </tr>
+    <tr><td colspan="4">&nbsp;&nbsp;&nbsp;</td></tr>
+    <tr><td colspan="4" align="center"><div id="chart_div">Unable to load Chart!</div></td></tr>
+    <tr>
+    <td colspan="4"  align="center">
+    	<font color="black" size="2">
+    	Birth     Every Five Year in Ascending Order
+    	</font>
+    </td>
+    </tr>
+     
+    <tr>
+    </tr>
+   <tr><td colspan="4">&nbsp;&nbsp;&nbsp;</td></tr>
+    <tr>
+    <td colspan="4"  align="center">
+    	<font color="black">
+    	Discover the stages of your life
+    	</font>
+    </td>
+    </tr>
+    <tr><td colspan="4" align="center">
+    	<a href="#" onclick="popup('popUpDivStablize')"><img src="stabilize_box.png"/><font color="#ca5e60" size="2">Stablize</font></a>&nbsp;
+   		<a href="#" onclick="popup('popUpDivBalance')"><img src="balance_box.png"/><font color="#dfb782" size="2">Balance</font></a>&nbsp;
+   		<a href="#" onclick="popup('popUpDivGrowing')"><img src="growing_box.png"/><font color="#3abeee" size="2">Growing</font></a>&nbsp;
+    	</td>
+    </tr>
+    <tr><td colspan="4">&nbsp;&nbsp;&nbsp;</td></tr>
+    <tr><td colspan="4" align="center">
+    	<div id="mainTurningStation"></div></td>
+    </tr>
+    
+  	</table>
+  </body>
+</html>

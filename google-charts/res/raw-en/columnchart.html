@@ -1,0 +1,38 @@
+<meta charset="utf-8">
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+       function drawChart() {
+        var jsonData=window.Android.getPerformance();
+        jsonData=JSON.parse(jsonData);
+        
+        var data = new google.visualization.DataTable();
+    	data.addColumn('string', 'Year');
+    	data.addColumn('number', 'Sale');
+    	data.addColumn('number', 'Expenses');
+
+        for(var i=0; i<jsonData.length; i++){
+        	data.addRow(jsonData[i]);
+        };
+    		
+        var options = {
+          title: 'Company Performance',
+          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>    
+  </head>
+  <body>
+    <div id="chart_div" style="width: 320px; height: 450px;"><p>Loading ...</p></div>
+   
+    <script type="text/javascript">
+       	google.load('visualization', '1.0', {'packages':['corechart']});
+      	google.setOnLoadCallback(drawChart);
+    </script>
+   </body>
+  
+</html>

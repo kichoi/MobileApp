@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content" 
+        android:layout_height="fill_parent" >
+
+
+     	<LinearLayout
+            android:id="@+id/langs_layout"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:layout_gravity="center" >
+
+         <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+          	android:layout_margin="5dp"
+           	android:layout_weight="1"
+            android:text="@string/setting_languages"
+            android:textAppearance="?android:attr/textAppearanceMedium"/> 	    
+      	<Spinner
+            android:id="@+id/langs_spinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+          	android:layout_margin="5dp"
+           	android:layout_weight="1"/>
+  		</LinearLayout>
+      
+        
+       <LinearLayout
+            android:layout_below="@+id/langs_layout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:layout_gravity="center" >
+
+       <Button
+           	android:id="@+id/setting_cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+          	android:layout_margin="5dp"
+           	android:layout_weight="1"
+         	android:text="@string/cancel" />
+ 	    	    
+       <Button
+           	android:id="@+id/setting_confirm_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="5dp"
+          	android:layout_margin="5dp"
+           	android:layout_weight="1"
+         	android:text="@string/confirm" />
+       	    
+  	</LinearLayout>
+        
+  </RelativeLayout>
